@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+# Push the canonical scenarios/platform into a generated scenario repo's vendored copy.
+#   tools/sync-platform /path/to/ppe        # updates /path/to/ppe/platform
+set -euo pipefail
+HERE="$(cd "$(dirname "$0")/.." && pwd)"
+DEST="${1:?usage: tools/sync-platform <scenario-repo-dir>}"
+[ -d "$DEST/platform" ] || { echo "no platform/ in $DEST — is it a scenario repo?"; exit 1; }
+rsync -a --delete \
+  --exclude '.venv' --exclude '__pycache__' --exclude '*.pyc' \
+  --exclude 'web/node_modules' --exclude '.next' --exclude '.git' \
+  "$HERE/platform/" "$DEST/platform/"
+echo "synced platform -> $DEST/platform  (rebuild: cd $DEST && docker compose up -d --build)"

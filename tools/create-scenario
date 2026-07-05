@@ -56,10 +56,10 @@ def ports_for(index: int) -> dict[str, int]:
         "__PORT_RUSTFS2__": 9001 + 2 * n,
         "__PORT_MAILDEV_SMTP__": 1025 + n,
         "__PORT_MAILDEV_UI__": 1080 + n,
-        "__PORT_MEDIAMTX_RTSP__": 8554 + n,
-        "__PORT_MEDIAMTX_WEBRTC__": 8889 + n,
-        "__PORT_MEDIAMTX_HLS__": 8888 + n,
-        "__PORT_MEDIAMTX_API__": 9997 + n,
+        "__PORT_MEDIAMTX_RTSP__": 8600 + n * 10,
+        "__PORT_MEDIAMTX_WEBRTC__": 8602 + n * 10,
+        "__PORT_MEDIAMTX_HLS__": 8601 + n * 10,
+        "__PORT_MEDIAMTX_API__": 8603 + n * 10,
     }
 
 

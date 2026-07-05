@@ -1,5 +1,8 @@
 {
   "_comment": "scenario slug -> port index N. Host ports derive from N (see tools/create-scenario). Do not reuse an index.",
   "frs": 0,
-  "suspect": 1
+  "suspect": 1,
+  "ppe": 2,
+  "anpr": 3,
+  "fire": 4
 }

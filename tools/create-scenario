@@ -115,7 +115,7 @@ def main() -> int:
         return 1
 
     index = allocate_index(slug)
-    tokens = {"__SLUG__": slug, "__NAME__": name, "__DB__": db}
+    tokens = {"__SLUG__": slug, "__NAME__": name, "__DB__": db, "__INDEX__": str(index)}
     tokens.update({k: str(v) for k, v in ports_for(index).items()})
 
     print(f"→ scenario '{name}'  slug={slug}  db={db}  port-index={index}")
@@ -128,16 +128,19 @@ def main() -> int:
     # 3. tokenize contents (template files only; platform is copied verbatim)
     for sub in ("backend", "frontend"):
         tokenize_tree(out_dir / sub, tokens)
-    # root-level template files
-    for f in ("docker-compose.yml", ".env.example", "README.md", "sync-platform.sh"):
+    # root-level template files (standalone + shared-infra variants)
+    for f in ("docker-compose.yml", "docker-compose.shared.yml",
+              ".env.example", ".env.shared.example", "README.md", "sync-platform.sh"):
         fp = out_dir / f
         if fp.exists():
             t = fp.read_text(encoding="utf-8")
             for k, v in tokens.items():
                 t = t.replace(k, v)
             fp.write_text(t, encoding="utf-8")
-    # 4. .env from .env.example
+    # 4. concrete env files from their examples (standalone + shared)
     shutil.copyfile(out_dir / ".env.example", out_dir / ".env")
+    if (out_dir / ".env.shared.example").exists():
+        shutil.copyfile(out_dir / ".env.shared.example", out_dir / ".env.shared")
 
     # 5. git init + commit
     if not args.no_git:

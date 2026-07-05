@@ -1,0 +1,78 @@
+# Vizor SHARED INFRA — run ONCE per client host. Every scenario stack (started
+# with its own docker-compose.shared.yml) joins the `vizor_shared` network this
+# compose creates and talks to these services by their stable container names
+# (vizor-postgres, vizor-redis, vizor-qdrant, vizor-rustfs, vizor-mediamtx,
+# vizor-maildev). Isolation between scenarios is preserved WITHOUT running N
+# copies of the infra:
+#   • Postgres  — one server, one DATABASE per scenario (frs / suspect / ppe …)
+#   • Redis     — one server, one logical DB-number per scenario (0..15)
+#   • Qdrant    — one server, app-specific collection names per scenario
+#   • RustFS/S3 — one server, one BUCKET per scenario (vizor-<slug>, auto-created)
+#   • MediaMTX  — one media server, camera paths namespaced at runtime
+#
+# Usage:  cp .env.example .env && docker compose up -d
+name: vizor-infra
+
+services:
+  postgres:
+    image: timescale/timescaledb:latest-pg16
+    container_name: vizor-postgres
+    restart: unless-stopped
+    env_file: .env
+    ports: ["5432:5432"]
+    volumes: ["pgdata:/var/lib/postgresql/data"]
+    networks: [vizor_shared]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  redis:
+    image: redis:7-alpine
+    container_name: vizor-redis
+    restart: unless-stopped
+    ports: ["6379:6379"]
+    networks: [vizor_shared]
+    healthcheck: { test: ["CMD", "redis-cli", "ping"], interval: 5s, timeout: 3s, retries: 5 }
+
+  qdrant:
+    image: qdrant/qdrant:latest
+    container_name: vizor-qdrant
+    restart: unless-stopped
+    ports: ["6333:6333"]
+    volumes: ["qdrant_data:/qdrant/storage"]
+    networks: [vizor_shared]
+
+  rustfs:
+    image: rustfs/rustfs:latest
+    container_name: vizor-rustfs
+    restart: unless-stopped
+    env_file: .env
+    ports: ["9000:9000", "9001:9001"]
+    volumes: ["rustfs_data:/data"]
+    networks: [vizor_shared]
+
+  mediamtx:
+    image: bluenviron/mediamtx:latest
+    container_name: vizor-mediamtx
+    restart: unless-stopped
+    ports: ["8554:8554", "8889:8889", "8888:8888", "9997:9997"]
+    volumes: ["./mediamtx.yml:/mediamtx.yml"]
+    networks: [vizor_shared]
+
+  maildev:
+    image: maildev/maildev:latest
+    container_name: vizor-maildev
+    restart: unless-stopped
+    ports: ["1025:1025", "1080:1080"]
+    networks: [vizor_shared]
+
+networks:
+  vizor_shared:
+    name: vizor_shared
+
+volumes:
+  pgdata:
+  qdrant_data:
+  rustfs_data:

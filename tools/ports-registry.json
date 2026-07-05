@@ -4,5 +4,6 @@
   "suspect": 1,
   "ppe": 2,
   "anpr": 3,
-  "fire": 4
+  "fire": 4,
+  "people-analytics": 5
 }

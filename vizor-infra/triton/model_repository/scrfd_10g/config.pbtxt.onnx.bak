@@ -3,7 +3,7 @@
 # (8/16/32) score / bbox / kps heads. No dynamic batching — detection runs one
 # frame at a time per camera and the output row counts are tied to 640 input.
 name: "scrfd_10g"
-platform: "tensorrt_plan"
+platform: "onnxruntime_onnx"
 max_batch_size: 0
 input [
   { name: "input.1" data_type: TYPE_FP32 dims: [ 1, 3, 640, 640 ] }

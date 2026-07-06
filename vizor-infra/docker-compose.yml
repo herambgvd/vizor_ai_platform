@@ -85,6 +85,7 @@ services:
       --load-model=scrfd_10g
       --load-model=arcface_r50
       --load-model=fairface
+      --load-model=antispoofing
       --log-verbose=0
       --strict-model-config=false
     volumes: ["./triton/model_repository:/models:ro"]

@@ -4,7 +4,7 @@
 #   output "output" = [live_logit, spoof_logit]  → class 0 = LIVE, class 1 = SPOOF
 # The plugin softmaxes and reads P(live) = softmax[0] (FRS_LIVE_CLASS_INDEX=0).
 name: "antispoofing"
-platform: "tensorrt_plan"
+platform: "onnxruntime_onnx"
 max_batch_size: 16
 input  [ { name: "input"  data_type: TYPE_FP32 dims: [ 3, 128, 128 ] } ]
 output [ { name: "output" data_type: TYPE_FP32 dims: [ 2 ] } ]

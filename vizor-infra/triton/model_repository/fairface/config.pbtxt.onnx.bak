@@ -3,7 +3,7 @@
 # the FRS plugin uses the gender + age heads. (vizor_nvr used a single concatenated
 # [18] output; the ported fairface postprocess handles this 3-head layout instead.)
 name: "fairface"
-platform: "tensorrt_plan"
+platform: "onnxruntime_onnx"
 max_batch_size: 32
 input [
   { name: "input" data_type: TYPE_FP32 dims: [ 3, 224, 224 ] }

@@ -1,0 +1,22 @@
+# ArcFace R50 512-d face embedder (InsightFace buffalo_l w600k_r50).
+#
+# NOTE: this public export has a FIXED batch dim (output '683' is [1,512]), so it
+# CANNOT use Triton dynamic batching (that needs a -1 leading dim). We run it
+# unbatched (max_batch_size 0), one face per request. vizor_nvr used a re-exported
+# ArcFace with a dynamic batch axis to enable cross-camera embed batching — to get
+# that throughput win back later, re-export w600k_r50 with dynamic axes and restore
+# max_batch_size: 16 + the dynamic_batching block below.
+name: "arcface_r50"
+platform: "onnxruntime_onnx"
+max_batch_size: 0
+input [
+  { name: "input.1" data_type: TYPE_FP32 dims: [ 1, 3, 112, 112 ] }
+]
+output [
+  { name: "683" data_type: TYPE_FP32 dims: [ 1, 512 ] }
+]
+instance_group [ { count: 2 kind: KIND_GPU } ]
+# dynamic_batching {                     # re-enable with a dynamic-axis re-export
+#   preferred_batch_size: [ 4, 8, 16 ]
+#   max_queue_delay_microseconds: 2000
+# }

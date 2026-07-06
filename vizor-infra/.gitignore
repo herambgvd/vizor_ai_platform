@@ -1,1 +1,7 @@
 .env
+
+# Triton model weights — large binaries, not pushable to GitHub. The config.pbtxt
+# files stay tracked (they describe each model); fetch weights on the target host.
+triton/model_repository/**/*.onnx
+triton/model_repository/**/*.plan
+triton/model_repository/**/*.bin

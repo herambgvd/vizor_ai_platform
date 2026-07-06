@@ -1,0 +1,20 @@
+# FairFace age/gender/race. THIS export exposes three separate heads
+# (race_output[7], gender_output[2], age_output[9]) with a dynamic batch axis —
+# the FRS plugin uses the gender + age heads. (vizor_nvr used a single concatenated
+# [18] output; the ported fairface postprocess handles this 3-head layout instead.)
+name: "fairface"
+platform: "onnxruntime_onnx"
+max_batch_size: 32
+input [
+  { name: "input" data_type: TYPE_FP32 dims: [ 3, 224, 224 ] }
+]
+output [
+  { name: "race_output"   data_type: TYPE_FP32 dims: [ 7 ] },
+  { name: "gender_output" data_type: TYPE_FP32 dims: [ 2 ] },
+  { name: "age_output"    data_type: TYPE_FP32 dims: [ 9 ] }
+]
+instance_group [ { count: 1 kind: KIND_GPU } ]
+dynamic_batching {
+  preferred_batch_size: [ 4, 8, 16 ]
+  max_queue_delay_microseconds: 3000
+}

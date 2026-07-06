@@ -68,6 +68,37 @@ services:
     ports: ["1025:1025", "1080:1080"]
     networks: [vizor_shared]
 
+  # Shared GPU inference server. One Triton for ALL scenarios — each scenario adds
+  # its models to ./triton/model_repository and its own --load-model line. Reached
+  # internally by container name: vizor-triton:8000 (HTTP) / :8001 (gRPC). Host
+  # ports remapped to 8010/8011 (8000 is taken by the FRS backend) for debugging.
+  # Image 25.06 (CUDA 12.9 / TensorRT 10.x) supports the RTX 5070 (Blackwell sm_120).
+  # Explicit model control so the GPU isn't filled by every scenario's weights.
+  triton:
+    image: nvcr.io/nvidia/tritonserver:25.06-py3
+    container_name: vizor-triton
+    restart: unless-stopped
+    command: >
+      tritonserver
+      --model-repository=/models
+      --model-control-mode=explicit
+      --load-model=scrfd_10g
+      --load-model=arcface_r50
+      --load-model=fairface
+      --log-verbose=0
+      --strict-model-config=false
+    volumes: ["./triton/model_repository:/models:ro"]
+    ports: ["8010:8000", "8011:8001"]
+    networks: [vizor_shared]
+    shm_size: "1g"
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+
 networks:
   vizor_shared:
     name: vizor_shared

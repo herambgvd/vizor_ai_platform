@@ -1,0 +1,8 @@
+# Clothes parser — SegFormer-B2 (18 clothes classes). Minimal config: Triton
+# auto-completes the input/output dims from the ONNX (--strict-model-config=false).
+# Labels: 0 bg,1 hat,2 hair,3 sunglasses,4 upper-clothes,5 skirt,6 pants,7 dress,
+# 8 belt,9 l-shoe,10 r-shoe,11 face,12 l-leg,13 r-leg,14 l-arm,15 r-arm,16 bag,17 scarf.
+name: "segformer_clothes"
+platform: "onnxruntime_onnx"
+max_batch_size: 0
+instance_group [ { count: 1 kind: KIND_GPU } ]

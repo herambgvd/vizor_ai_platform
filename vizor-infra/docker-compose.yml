@@ -86,6 +86,7 @@ services:
       --model-repository=/models
       --model-control-mode=explicit
       --load-model=yolo26
+      --load-model=segformer_clothes
       --log-verbose=0
       --strict-model-config=false
     volumes: ["./triton/model_repository:/models:ro"]

@@ -78,14 +78,13 @@ services:
     image: nvcr.io/nvidia/tritonserver:25.06-py3
     container_name: vizor-triton
     restart: unless-stopped
+    # NOTE: FRS models (scrfd_10g / arcface_r50 / fairface / antispoofing) are
+    # temporarily NOT in the --load-model list (People Analytics phase). Their files
+    # stay in the repo — re-add the --load-model lines below to bring FRS back online.
     command: >
       tritonserver
       --model-repository=/models
       --model-control-mode=explicit
-      --load-model=scrfd_10g
-      --load-model=arcface_r50
-      --load-model=fairface
-      --load-model=antispoofing
       --load-model=yolo26
       --log-verbose=0
       --strict-model-config=false

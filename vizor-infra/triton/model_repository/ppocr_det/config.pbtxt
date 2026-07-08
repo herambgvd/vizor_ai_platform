@@ -1,0 +1,9 @@
+# PP-OCRv4 text DETECTION (DBNet). Finds the plate's text-line region(s) so the
+# recogniser gets a tight crop (handles single- AND two-line Indian plates). Input
+# x [N,3,H,W] and output sigmoid_0.tmp_0 [N,1,H,W] both have dynamic H/W, so we run
+# on the GPU via the ONNX Runtime CUDA provider (TensorRT would need static shape
+# profiles). Triton auto-completes the IO dims (--strict-model-config=false).
+name: "ppocr_det"
+platform: "onnxruntime_onnx"
+max_batch_size: 0
+instance_group [ { count: 1 kind: KIND_GPU } ]

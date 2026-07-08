@@ -57,7 +57,11 @@ services:
     image: bluenviron/mediamtx:latest
     container_name: vizor-mediamtx
     restart: unless-stopped
-    ports: ["8554:8554", "8889:8889", "8888:8888", "9997:9997"]
+    # 8189/udp = WebRTC media (ICE); ADDITIONALHOSTS advertises a browser-reachable
+    # host in the ICE candidates so live WHEP playback works from the dev browser.
+    environment:
+      MTX_WEBRTCADDITIONALHOSTS: "localhost"
+    ports: ["8554:8554", "8889:8889", "8888:8888", "9997:9997", "8189:8189/udp"]
     volumes: ["./mediamtx.yml:/mediamtx.yml"]
     networks: [vizor_shared]
 
@@ -87,6 +91,9 @@ services:
       --model-control-mode=explicit
       --load-model=yolo26
       --load-model=segformer_clothes
+      --load-model=plate_yolo26
+      --load-model=ppocr_det
+      --load-model=ppocr_rec
       --log-verbose=0
       --strict-model-config=false
     volumes: ["./triton/model_repository:/models:ro"]

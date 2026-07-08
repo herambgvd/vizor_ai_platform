@@ -1,0 +1,9 @@
+# PP-OCRv4 text RECOGNITION (CRNN/SVTR + CTC). Reads the characters from each text
+# line crop. Input x [N,3,48,W] (H fixed 48, W dynamic) → output softmax_11.tmp_0
+# [N,T,6625] (already softmaxed; index 0 = CTC blank, last = space). The client owns
+# the H=48 resize, normalisation, and CTC greedy decode against ppocr_rec_dict.txt.
+# Dynamic width → GPU via the ONNX Runtime CUDA provider.
+name: "ppocr_rec"
+platform: "onnxruntime_onnx"
+max_batch_size: 0
+instance_group [ { count: 1 kind: KIND_GPU } ]
